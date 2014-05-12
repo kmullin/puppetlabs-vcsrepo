@@ -315,7 +315,9 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
         return ret
       end
     elsif @resource.value(:user)
-      su(@resource.value(:user), '-c', "git #{args.join(' ')}" )
+      # set shell to external shell for su command
+      shell = ['-s', '/bin/sh'] if Facter['kernel'].value == 'Linux'
+      su(@resource.value(:user), '-c', "git #{args.join(' ')}", *shell)
     else
       git(*args)
     end
